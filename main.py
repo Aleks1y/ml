@@ -239,4 +239,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         update_data_files(models_file, res_file, zond_file)
 
-    main(models_file, res_file, zond_file, 'csv/pred7.csv')
+    main(models_file, res_file, zond_file)
