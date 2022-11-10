@@ -71,8 +71,6 @@ def update_data_files(models_filename, res_filename, zond_filename):
 # отбираем значимые предикторы и сохраняем в csv файл
 def train_model(y, x, out_filename=None):
     model = sm.OLS(y, x).fit()
-    print(model.summary())
-    print(len(x.columns))
     max_pval = 0.05
     pVals = model.pvalues
 
@@ -81,15 +79,12 @@ def train_model(y, x, out_filename=None):
         while np.max(pVals) > sigLevel or np.isnan(np.min(pVals)):
             i = 1
             while i < pVals.size:
-                # print(i)
                 if pVals[i] > sigLevel or np.isnan(pVals[i]):
                     pVals = pVals.drop(pVals.index[i])
                     x = x.drop(columns=[x.columns[i]])
                 else:
                     i += 1
             model = sm.OLS(y, x).fit()
-            print(model.summary())
-            print(len(x.columns))
             pVals = model.pvalues
         sigLevel -= 0.15
 
@@ -219,7 +214,7 @@ def main(models_filename, res_filename, zond_filename, predictors_filename=None,
 
                 z_column = zond_column[8]
 
-                #выводим на график рассчитанных значений
+                #наносим на график рассчитанные значения
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection='3d')
                 x, y, z = dfp[column1], dfp[column2], np.log(dfp[z_column])
@@ -228,9 +223,10 @@ def main(models_filename, res_filename, zond_filename, predictors_filename=None,
                 ax.set_ylabel(column2)
                 ax.set_zlabel(z_column)
 
-                #получаем предсказания модели и наносим их на график
+                #получаем предсказания модели для текущей группы и наносим их на график
                 z_pred1 = model1.predict(Xc)
                 ax.scatter(x, y, z_pred1)
+                
                 print(r2_score(z, z_pred1))
                 # plt.savefig('pict\\3dScatters6-df5-add-point\\' + column1 + '_' + column2 + '_' + i.__str__() + '.png')
                 plt.show()
